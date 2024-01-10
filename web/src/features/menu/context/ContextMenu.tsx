@@ -16,10 +16,11 @@ const openMenu = (id: string | undefined) => {
 const useStyles = createStyles((theme) => ({
   container: {
     position: 'absolute',
-    top: '15%',
-    right: '25%',
+    top: '25%',
+    right: '20%',
     width: 320,
     height: 580,
+    transform: 'perspective(1000px) rotateX(1deg) rotateY(-16deg) rotateZ(1deg)',
   },
   header: {
     justifyContent: 'center',
@@ -28,12 +29,12 @@ const useStyles = createStyles((theme) => ({
     gap: 6,
   },
   titleContainer: {
-    borderRadius: 4,
+    borderRadius: 2,
     flex: '1 85%',
-    backgroundColor: theme.colors.dark[6],
+    backgroundColor: 'rgba(255, 0, 0, 0.75)',
   },
   titleText: {
-    color: theme.colors.dark[0],
+    color: 'white',
     padding: 6,
     textAlign: 'center',
   },

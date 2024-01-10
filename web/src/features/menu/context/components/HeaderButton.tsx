@@ -18,12 +18,16 @@ const useStyles = createStyles((theme, params: { canClose?: boolean }) => ({
     textAlign: 'center',
     justifyContent: 'center',
     padding: 2,
+    backgroundColor: 'rgba(255, 0, 0, 0.75)',
+    ':hover': {
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    }
   },
   root: {
     border: 'none',
   },
   label: {
-    color: params.canClose === false ? theme.colors.dark[2] : theme.colors.dark[0],
+    color: 'white',
   },
 }));
 

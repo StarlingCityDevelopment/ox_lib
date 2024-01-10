@@ -21,7 +21,7 @@ const useStyles = createStyles((theme, params: { disabled?: boolean; readOnly?: 
   },
   label: {
     width: '100%',
-    color: params.disabled ? theme.colors.dark[3] : theme.colors.dark[0],
+    color: 'white',
     whiteSpace: 'pre-wrap',
   },
   button: {
@@ -29,27 +29,31 @@ const useStyles = createStyles((theme, params: { disabled?: boolean; readOnly?: 
     width: '100%',
     padding: 10,
     '&:hover': {
-      backgroundColor: params.readOnly ? theme.colors.dark[6] : undefined,
+      backgroundColor: 'rgba(0, 0, 0, 1.0)',
       cursor: params.readOnly ? 'unset' : 'pointer',
+      transform: 'scale(0.95)',
     },
-    '&:active': {
-      transform: params.readOnly ? 'unset' : undefined,
+    ':disabled': {
+      backgroundColor: 'rgba(0, 0, 0, 1.0)',
     },
   },
   iconImage: {
     maxWidth: '25px',
   },
   description: {
-    color: params.disabled ? theme.colors.dark[3] : theme.colors.dark[2],
+    color: 'white',
     fontSize: 12,
   },
   dropdown: {
     padding: 10,
-    color: theme.colors.dark[0],
+    color: 'white',
     fontSize: 14,
     maxWidth: 256,
     width: 'fit-content',
     border: 'none',
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    marginLeft: 10,
+    marginTop: 10,
   },
   buttonStack: {
     gap: 4,
