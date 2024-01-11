@@ -28,8 +28,9 @@ const useStyles = createStyles((theme, params: { disabled?: boolean; readOnly?: 
     height: 'fit-content',
     width: '100%',
     padding: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
     '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 1.0)',
+      backgroundColor: 'rgba(0, 0, 0, 0.75)',
       cursor: params.readOnly ? 'unset' : 'pointer',
       transform: 'scale(0.95)',
     },
