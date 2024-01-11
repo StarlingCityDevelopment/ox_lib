@@ -50,7 +50,7 @@ const TextUI: React.FC = () => {
     <>
       <Box className={classes.wrapper}>
         <ScaleFade visible={visible}>
-          <Box style={data.style} className={classes.container}>
+          <Box className={classes.container}>
             <Group spacing={12}>
               {data.icon && (
                 <LibIcon

@@ -11,11 +11,11 @@ const useStyles = createStyles((theme) => ({
   container: {
     width: 300,
     height: 'fit-content',
-    backgroundColor: theme.colors.dark[6],
-    color: theme.colors.dark[0],
+    backgroundColor: 'rgba(0, 0, 0, 0.75)',
+    color: 'white',
     padding: 12,
     borderRadius: theme.radius.sm,
-    fontFamily: 'Roboto',
+    fontFamily: 'Quicksand',
     boxShadow: theme.shadows.sm,
   },
   title: {
@@ -24,14 +24,14 @@ const useStyles = createStyles((theme) => ({
   },
   description: {
     fontSize: 12,
-    color: theme.colors.dark[2],
-    fontFamily: 'Roboto',
+    color: 'white',
+    fontFamily: 'Quicksand',
     lineHeight: 'normal',
   },
   descriptionOnly: {
     fontSize: 14,
-    color: theme.colors.dark[2],
-    fontFamily: 'Roboto',
+    color: 'white',
+    fontFamily: 'Quicksand',
     lineHeight: 'normal',
   },
 }));
@@ -100,6 +100,15 @@ const exitAnimationBottom = keyframes({
   to: {
     opacity: 0,
     transform: 'translateY(100%)',
+  },
+});
+
+const lineAnimation = keyframes({
+  from: {
+    width: '100%',
+  },
+  to: {
+    width: '10%',
   },
 });
 

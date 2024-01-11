@@ -8,5 +8,4 @@ pnpm-debug.log*
 /package/**/*.js.map
 /package/**/*.d.ts
 
-/web/node_modules
-/web/build
+/web/node_modulesW

@@ -48,11 +48,11 @@ const InputDialog: React.FC = () => {
             row.type !== 'checkbox'
               ? row.type === 'date' || row.type === 'date-range' || row.type === 'time'
                 ? // Set date to current one if default is set to true
-                  row.default === true
+                row.default === true
                   ? new Date().getTime()
                   : Array.isArray(row.default)
-                  ? row.default.map((date) => new Date(date).getTime())
-                  : row.default && new Date(row.default).getTime()
+                    ? row.default.map((date) => new Date(date).getTime())
+                    : row.default && new Date(row.default).getTime()
                 : row.default
               : row.checked,
         } || { value: null }
@@ -104,7 +104,17 @@ const InputDialog: React.FC = () => {
         closeOnEscape={fields.options?.allowCancel !== false}
         closeOnClickOutside={false}
         size="xs"
-        styles={{ title: { textAlign: 'center', width: '100%', fontSize: 18 } }}
+        styles={{
+          title: {
+            textAlign: 'center',
+            width: '100%',
+            fontSize: 18
+          },
+          modal: {
+            color: 'white',
+            backgroundColor: 'rgba(0, 0, 0, 0.75)',
+          }
+        }}
         title={fields.heading}
         withCloseButton={false}
         overlayOpacity={0.5}
@@ -154,14 +164,15 @@ const InputDialog: React.FC = () => {
             <Group position="right" spacing={10}>
               <Button
                 uppercase
-                variant="default"
+                variant="light"
+                color='red'
                 onClick={() => handleClose()}
                 mr={3}
                 disabled={fields.options?.allowCancel === false}
               >
                 {locale.ui.cancel}
               </Button>
-              <Button uppercase variant="light" type="submit">
+              <Button uppercase variant="light" color='green' type="submit">
                 {locale.ui.confirm}
               </Button>
             </Group>
