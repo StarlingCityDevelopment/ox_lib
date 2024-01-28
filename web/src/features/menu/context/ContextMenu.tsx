@@ -95,7 +95,6 @@ const ContextMenu: React.FC = () => {
   return (
     <Box className={classes.container}>
       <ScaleFade visible={visible}>
-        <img className={classes.image} src="https://cdn.discordapp.com/attachments/1037096293471879289/1193272690023334040/banniere_arma.png" />
         <Flex className={classes.header}>
           {contextMenu.menu && (
             <HeaderButton icon="chevron-left" iconSize={16} handleClick={() => openMenu(contextMenu.menu)} />
