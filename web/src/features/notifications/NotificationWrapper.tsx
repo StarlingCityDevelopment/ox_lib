@@ -34,6 +34,13 @@ const useStyles = createStyles((theme) => ({
     fontFamily: 'Quicksand',
     lineHeight: 'normal',
   },
+  line: {
+    width: '100%',
+    height: '4px',
+    backgroundColor: 'white',
+    borderRadius: '4px',
+    marginTop: '5px',
+  }
 }));
 
 // I hate this
@@ -210,7 +217,7 @@ const Notifications: React.FC = () => {
               )}
             </Stack>
           </Group>
-          <Box sx={{ width: '100%', height: '5px', backgroundColor: 'white', borderRadius: '4px', marginTop: '10px' }} />
+          <Box className={classes.line} />
         </Box>
       ),
       {
@@ -221,14 +228,9 @@ const Notifications: React.FC = () => {
     );
   });
 
-  return <Toaster
-    containerStyle={{
-      marginTop: '75px',
-      marginRight: '75px',
-      marginLeft: '75px',
-      marginBottom: '75px',
-    }}
-  />;
+  return <Toaster containerStyle={{
+    margin: '50px',
+  }} />;
 };
 
 export default Notifications;
