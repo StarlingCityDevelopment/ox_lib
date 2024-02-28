@@ -12,34 +12,45 @@ const useStyles = createStyles((theme) => ({
     position: 'absolute',
     top: '50%',
     left: '50%',
-    transform: 'translate(-50%, -50%)',
+    transform: 'translate(-50%, -50%) scale(1.1)',
   },
+
   sector: {
-    fill: theme.colors.dark[6],
-    color: theme.colors.dark[0],
+    fill: 'rgba(0, 0, 0, 0.75)',
+    color: 'white',
 
     '&:hover': {
-      fill: theme.fn.primaryColor(),
+      cursor: 'pointer',
+      fill: 'rgba(255, 255, 255, 0.75)',
+
       '> g > text, > g > svg > path': {
         fill: '#fff',
       },
+
+      '> g > text': {
+        fill: '#000',
+      },
     },
+
     '> g > text': {
-      fill: theme.colors.dark[0],
+      fill: 'white',
     },
   },
+
   backgroundCircle: {
-    fill: theme.colors.dark[6],
+    fill: 'rgba(0, 0, 0, 0.75)',
   },
+
   centerCircle: {
-    fill: theme.fn.primaryColor(),
+    fill: 'rgba(255, 0, 0, 0.75)',
     color: '#fff',
-    stroke: theme.colors.dark[6],
+    stroke: 'rgba(0, 0, 0, 0.75)',
     strokeWidth: 4,
     '&:hover': {
-      fill: theme.colors[theme.primaryColor][theme.fn.primaryShade() - 1],
+      fill: 'rgba(255, 255, 255, 0.75)',
     },
   },
+
   centerIconContainer: {
     position: 'absolute',
     top: '50%',
@@ -47,8 +58,12 @@ const useStyles = createStyles((theme) => ({
     transform: 'translate(-50%, -50%)',
     pointerEvents: 'none',
   },
+
   centerIcon: {
     color: '#fff',
+    '&:hover': {
+      color: '#000',
+    }
   },
 }));
 

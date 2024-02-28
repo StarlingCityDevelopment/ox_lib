@@ -143,23 +143,23 @@ const Notifications: React.FC = () => {
           break;
       }
     }
+
     toast.custom(
       (t) => (
         <Box
           sx={{
             animation: t.visible
               ? `${position?.includes('bottom') ? enterAnimationBottom : enterAnimationTop} 0.2s ease-out forwards`
-              : `${
-                  position?.includes('right')
-                    ? exitAnimationRight
-                    : position?.includes('left')
-                    ? exitAnimationLeft
-                    : position === 'top-center'
+              : `${position?.includes('right')
+                ? exitAnimationRight
+                : position?.includes('left')
+                  ? exitAnimationLeft
+                  : position === 'top-center'
                     ? exitAnimationTop
                     : position
-                    ? exitAnimationBottom
-                    : exitAnimationRight
-                } 0.4s ease-in forwards`,
+                      ? exitAnimationBottom
+                      : exitAnimationRight
+              } 0.4s ease-in forwards`,
             ...data.style,
           }}
           className={`${classes.container}`}
@@ -173,10 +173,10 @@ const Notifications: React.FC = () => {
                       data.type === 'error'
                         ? 'red'
                         : data.type === 'success'
-                        ? 'teal'
-                        : data.type === 'warning'
-                        ? 'yellow'
-                        : 'blue'
+                          ? 'teal'
+                          : data.type === 'warning'
+                            ? 'yellow'
+                            : 'blue'
                     }
                     style={{ alignSelf: !data.alignIcon || data.alignIcon === 'center' ? 'center' : 'start' }}
                     radius="xl"
@@ -210,6 +210,7 @@ const Notifications: React.FC = () => {
               )}
             </Stack>
           </Group>
+          <Box sx={{ width: '100%', height: '5px', backgroundColor: 'white', borderRadius: '4px', marginTop: '10px' }} />
         </Box>
       ),
       {
@@ -220,7 +221,14 @@ const Notifications: React.FC = () => {
     );
   });
 
-  return <Toaster />;
+  return <Toaster
+    containerStyle={{
+      marginTop: '75px',
+      marginRight: '75px',
+      marginLeft: '75px',
+      marginBottom: '75px',
+    }}
+  />;
 };
 
 export default Notifications;

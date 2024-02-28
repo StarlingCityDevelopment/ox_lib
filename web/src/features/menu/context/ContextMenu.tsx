@@ -16,11 +16,11 @@ const openMenu = (id: string | undefined) => {
 const useStyles = createStyles((theme) => ({
   container: {
     position: 'absolute',
-    top: '25%',
+    top: '30%',
     right: '20%',
     width: 320,
     height: 580,
-    transform: 'perspective(1000px) rotateX(1deg) rotateY(-16deg) rotateZ(1deg)',
+    transform: 'scale(1.15) perspective(1000px) rotateX(1deg) rotateY(-16deg) rotateZ(1deg)',
   },
   header: {
     justifyContent: 'center',
@@ -95,7 +95,6 @@ const ContextMenu: React.FC = () => {
   return (
     <Box className={classes.container}>
       <ScaleFade visible={visible}>
-        <img className={classes.image} src="https://cdn.discordapp.com/attachments/1037096293471879289/1193272690023334040/banniere_arma.png" />
         <Flex className={classes.header}>
           {contextMenu.menu && (
             <HeaderButton icon="chevron-left" iconSize={16} handleClick={() => openMenu(contextMenu.menu)} />
