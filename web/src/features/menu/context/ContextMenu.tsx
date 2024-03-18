@@ -20,7 +20,7 @@ const useStyles = createStyles((theme) => ({
     right: '20%',
     width: 320,
     height: 580,
-    transform: 'scale(1.15) perspective(1000px) rotateX(1deg) rotateY(-16deg) rotateZ(1deg)',
+    transform: 'perspective(1000px) rotateX(1deg) rotateY(-16deg) rotateZ(1deg)',
   },
   header: {
     justifyContent: 'center',
