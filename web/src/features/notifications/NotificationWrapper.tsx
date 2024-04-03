@@ -17,19 +17,22 @@ const useStyles = createStyles((theme) => ({
     borderRadius: theme.radius.sm,
     fontFamily: 'Quicksand',
     boxShadow: theme.shadows.sm,
+    scale: '1.1',
+    marginBottom: 10,
   },
   title: {
+    fontSize: 18,
     fontWeight: 500,
     lineHeight: 'normal',
   },
   description: {
-    fontSize: 12,
+    fontSize: 14,
     color: 'white',
     fontFamily: 'Quicksand',
     lineHeight: 'normal',
   },
   descriptionOnly: {
-    fontSize: 14,
+    fontSize: 16,
     color: 'white',
     fontFamily: 'Quicksand',
     lineHeight: 'normal',
@@ -107,15 +110,6 @@ const exitAnimationBottom = keyframes({
   to: {
     opacity: 0,
     transform: 'translateY(100%)',
-  },
-});
-
-const lineAnimation = keyframes({
-  from: {
-    width: '100%',
-  },
-  to: {
-    width: '10%',
   },
 });
 
