@@ -2,8 +2,6 @@ name: Zip creator
 
 on:
   push:
-    branches:
-      - 'main'
 
 jobs:
   create-zip:
