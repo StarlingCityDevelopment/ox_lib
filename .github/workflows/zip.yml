@@ -42,7 +42,9 @@ jobs:
         run: |
           mkdir -p ./temp/ox_lib
           mkdir -p ./temp/ox_lib/web/
+          mkdir -p ./temp/ox_lib/locales/
           cp ./{fxmanifest.lua,init.lua,locales/en.json,locales/fr.json} ./temp/ox_lib
+          cp ./{locales/en.json,locales/fr.json} ./temp/ox_lib/locales
           cp -r ./{imports,resource} ./temp/ox_lib
           cp -r ./web/build ./temp/ox_lib/web/
           cd ./temp && zip -r ../ox_lib.zip ./ox_lib
