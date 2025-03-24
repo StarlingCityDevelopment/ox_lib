@@ -1,4 +1,4 @@
-name: Zip creator
+name: Zip Creator
 
 on:
   push:
@@ -43,7 +43,7 @@ jobs:
           mkdir -p ./temp/ox_lib
           mkdir -p ./temp/ox_lib/web/
           mkdir -p ./temp/ox_lib/locales/
-          cp ./{fxmanifest.lua,init.lua,locales/en.json,locales/fr.json} ./temp/ox_lib
+          cp ./{fxmanifest.lua,init.lua} ./temp/ox_lib
           cp ./{locales/en.json,locales/fr.json} ./temp/ox_lib/locales
           cp -r ./{imports,resource} ./temp/ox_lib
           cp -r ./web/build ./temp/ox_lib/web/
