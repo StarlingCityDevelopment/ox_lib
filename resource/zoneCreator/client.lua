@@ -145,7 +145,7 @@ end
 
 local function updateText()
     local text = {
-        ('------ Création d\\'une %s Zone ------  \n'):format(firstToUpper(zoneType)),
+        ('------ Création d\'une %s Zone ------  \n'):format(firstToUpper(zoneType)),
         ('Taille du pas [Molette] : %sm/%s°  \n'):format(steps[1][step], steps[2][step]),
         ('Coordonnée X [A/D] : %s  \n'):format(xCoord),
         ('Coordonnée Y [W/S] : %s  \n'):format(yCoord),
