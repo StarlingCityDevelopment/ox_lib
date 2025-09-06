@@ -9,93 +9,245 @@
 local creatorActive = false
 local controlsActive = false
 local zoneType, step, xCoord, yCoord, zCoord, heading, height, width, length
-local steps = {{0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100}, {0.25, 0.5, 1, 2.5, 5, 15, 30, 45, 60, 90, 180}}
+local steps = { { 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10, 25, 50, 100 }, { 0.25, 0.5, 1, 2.5, 5, 15, 30, 45, 60, 90, 180 } }
 local points = {}
 local format = 'array'
-local displayModes = {'basic', 'walls', 'axes', 'full'}
+local displayModes = { 'basic', 'walls', 'axes', 'full' }
 local displayMode = 1
 local minCheck = steps[1][1] / 2
 local lastZone = {}
 local alignMovementWithCamera = false
-local useLastZoneFalsyInputs = {['0'] = true, [''] = true, ['false'] = true, ['nil'] = true}
+local useLastZoneFalsyInputs = { ['0'] = true, [''] = true, ['false'] = true, ['nil'] = true }
+
+local parse = {
+    poly = function(data)
+        local points = {}
+        for i = 1, #data.points do
+            points[#points + 1] = ('\t\tvec3(%s, %s, %s),\n'):format((data.points[i].x), (data.points[i].y), data.zCoord)
+        end
+
+        local pattern
+        if data.format == 'function' then
+            pattern = {
+                'local poly = lib.zones.poly({\n',
+                ('\tname = "%s",\n'):format(data.name),
+                '\tpoints = {\n',
+                ('%s\t},\n'):format(table.concat(points)),
+                ('\tthickness = %s,\n'):format(data.height),
+                '})\n',
+            }
+        elseif data.format == 'array' then
+            pattern = {
+                '{\n',
+                ('\tname = "%s",\n'):format(data.name),
+                '\tpoints = {\n',
+                ('%s\t},\n'):format(table.concat(points)),
+                ('\tthickness = %s,\n'):format(data.height),
+                '},\n'
+            }
+        elseif data.format == 'target' then
+            pattern = {
+                'exports.ox_target:addPolyZone({\n',
+                ('\tname = "%s",\n'):format(data.name),
+                '\tpoints = {\n',
+                ('%s\t},\n'):format(table.concat(points)),
+                ('\tthickness = %s,\n'):format(data.height),
+                '})\n'
+            }
+        end
+
+        return table.concat(pattern)
+    end,
+    box = function(data)
+        local pattern
+        if data.format == 'function' then
+            pattern = {
+                'local box = lib.zones.box({\n',
+                ('\tname = "%s",\n'):format(data.name),
+                ('\tcoords = vec3(%s, %s, %s),\n'):format(
+                    formatNumber(data.xCoord),
+                    formatNumber(data.yCoord),
+                    formatNumber(data.zCoord)
+                ),
+                ('\tsize = vec3(%s, %s, %s),\n'):format(
+                    formatNumber(data.width),
+                    formatNumber(data.length),
+                    formatNumber(data.height)
+                ),
+                ('\trotation = %s,\n'):format(formatNumber(data.heading)),
+                '})\n',
+            }
+        elseif data.format == 'array' then
+            pattern = {
+                '{\n',
+                ('\tname = "%s",\n'):format(data.name),
+                ('\tcoords = vec3(%s, %s, %s),\n'):format(
+                    formatNumber(data.xCoord),
+                    formatNumber(data.yCoord),
+                    formatNumber(data.zCoord)
+                ),
+                ('\tsize = vec3(%s, %s, %s),\n'):format(
+                    formatNumber(data.width),
+                    formatNumber(data.length),
+                    formatNumber(data.height)
+                ),
+                ('\trotation = %s,\n'):format(formatNumber(data.heading)),
+                '},\n',
+            }
+        elseif data.format == 'target' then
+            pattern = {
+                'exports.ox_target:addBoxZone({\n',
+                ('\tname = "%s",\n'):format(data.name),
+                ('\tcoords = vec3(%s, %s, %s),\n'):format(data.xCoord, data.yCoord, data.zCoord),
+                ('\tsize = vec3(%s, %s, %s),\n'):format(data.width, data.length, data.height),
+                ('\trotation = %s,\n'):format(data.heading),
+                '})\n',
+            }
+        end
+
+        return table.concat(pattern)
+    end,
+    sphere = function(data)
+        local pattern
+        if data.format == 'function' then
+            pattern = {
+                'local sphere = lib.zones.sphere({\n',
+                ('\tname = "%s",\n'):format(data.name),
+                ('\tcoords = vec3(%s, %s, %s),\n'):format(data.xCoord, data.yCoord, data.zCoord),
+                ('\tradius = %s,\n'):format(data.height),
+                '})\n',
+            }
+        elseif data.format == 'array' then
+            pattern = {
+                '{\n',
+                ('\tname = "%s",\n'):format(data.name),
+                ('\tcoords = vec3(%s, %s, %s),\n'):format(data.xCoord, data.yCoord, data.zCoord),
+                ('\tradius = %s,\n'):format(data.height),
+                '},\n',
+            }
+        elseif data.format == 'target' then
+            pattern = {
+                'exports.ox_target:addSphereZone({\n',
+                ('\tname = "%s",\n'):format(data.name),
+                ('\tcoords = vec3(%s, %s, %s),\n'):format(data.xCoord, data.yCoord, data.zCoord),
+                ('\tradius = %s,\n'):format(data.height),
+                '})\n',
+            }
+        end
+
+        return table.concat(pattern)
+    end,
+}
 
 local function firstToUpper(str)
     return (str:gsub('^%l', string.upper))
 end
 
 local function updateText()
-	local text = {
-		('------ Creating %s Zone ------  \n'):format(firstToUpper(zoneType)),
-		('Step size [Scroll]: %sm/%s&deg;  \n'):format(steps[1][step], steps[2][step]),
-		('X coord [A/D]: %s  \n'):format(xCoord),
-		('Y coord [W/S]: %s  \n'):format(yCoord),
-		('Z coord [R/F]: %s  \n'):format(zCoord),
-	}
+    local text = {
+        ('------ Création d\\'une %s Zone ------  \n'):format(firstToUpper(zoneType)),
+        ('Taille du pas [Molette] : %sm/%s°  \n'):format(steps[1][step], steps[2][step]),
+        ('Coordonnée X [A/D] : %s  \n'):format(xCoord),
+        ('Coordonnée Y [W/S] : %s  \n'):format(yCoord),
+        ('Coordonnée Z [R/F] : %s  \n'):format(zCoord),
+    }
 
-	if zoneType == 'poly' then
-		text[#text + 1] = ('Height [Shift + Scroll]: %s  \n'):format(height)
-		text[#text + 1] = ('Cycle display mode [G]: %s  \n'):format(firstToUpper(displayModes[displayMode]))
-        text[#text + 1] = ('Toggle Axis mode [C]: %s  \n'):format(alignMovementWithCamera and 'Camera' or 'Grid')
-		text[#text + 1] = 'Create new point - [Space]  \n'
-        text[#text + 1] = 'Edit last point - [Backspace]  \n'
-	elseif zoneType == 'box' then
-		text[#text + 1] = ('Heading [Q/E]: %s&deg;  \n'):format(heading)
-		text[#text + 1] = ('Height [Shift + Scroll]: %s  \n'):format(height)
-		text[#text + 1] = ('Width [Ctrl + Scroll]: %s  \n'):format(width)
-		text[#text + 1] = ('Length [Alt + Scroll]: %s  \n'):format(length)
-		text[#text + 1] = ('Cycle display mode [G]: %s  \n'):format(firstToUpper(displayModes[displayMode]))
-        text[#text + 1] = ('Toggle Axis mode [C]: %s  \n'):format(alignMovementWithCamera and 'Camera' or 'Grid')
-		text[#text + 1] = 'Recenter - [Space]  \n'
-	elseif zoneType == 'sphere' then
-		text[#text + 1] = ('Size [Shift + Scroll]: %s  \n'):format(height)
-        text[#text + 1] = ('Toggle Axis mode [C]: %s  \n'):format(alignMovementWithCamera and 'Camera' or 'Grid')
-		text[#text + 1] = 'Recenter - [Space]  \n'
-	end
+    if zoneType == 'poly' then
+        text[#text + 1] = ('Hauteur [Shift + Molette] : %s  \n'):format(height)
+        text[#text + 1] = ('Mode d\\'affichage [G] : %s  \n'):format(firstToUpper(displayModes[displayMode]))
+        text[#text + 1] = ('Basculer mode Axe [C] : %s  \n'):format(alignMovementWithCamera and 'Caméra' or 'Grille')
+        text[#text + 1] = 'Créer un nouveau point - [Espace]  \n'
+        text[#text + 1] = 'Modifier le dernier point - [Retour arrière]  \n'
+    elseif zoneType == 'box' then
+        text[#text + 1] = ('Orientation [Q/E] : %s°  \n'):format(heading)
+        text[#text + 1] = ('Hauteur [Shift + Molette] : %s  \n'):format(height)
+        text[#text + 1] = ('Largeur [Ctrl + Molette] : %s  \n'):format(width)
+        text[#text + 1] = ('Longueur [Alt + Molette] : %s  \n'):format(length)
+        text[#text + 1] = ('Mode d\\'affichage [G] : %s  \n'):format(firstToUpper(displayModes[displayMode]))
+        text[#text + 1] = ('Basculer mode Axe [C] : %s  \n'):format(alignMovementWithCamera and 'Caméra' or 'Grille')
+        text[#text + 1] = 'Récadrer - [Espace]  \n'
+    elseif zoneType == 'sphere' then
+        text[#text + 1] = ('Taille [Shift + Molette] : %s  \n'):format(height)
+        text[#text + 1] = ('Basculer mode Axe [C] : %s  \n'):format(alignMovementWithCamera and 'Caméra' or 'Grille')
+        text[#text + 1] = 'Récadrer - [Espace]  \n'
+    end
 
-	text[#text + 1] = 'Toggle controls - [X]  \n'
-	text[#text + 1] = 'Save - [Enter]  \n'
-	text[#text + 1] = 'Cancel - [Esc]'
+    text[#text + 1] = 'Activer/Désactiver contrôles - [X]  \n'
+    text[#text + 1] = 'Enregistrer - [Entrée]  \n'
+    text[#text + 1] = 'Annuler - [Échap]'
 
-	lib.showTextUI(table.concat(text))
+    lib.showTextUI(table.concat(text))
 end
 
 local function round(number)
-	return number >= 0 and math.floor(number + 0.5) or math.ceil(number - 0.5)
+    return number >= 0 and math.floor(number + 0.5) or math.ceil(number - 0.5)
 end
 
 local function closeCreator(cancel)
-	if not cancel then
-		if zoneType == 'poly' then
-			points[#points + 1] = vec(xCoord, yCoord)
-		end
+    if not cancel then
+        if zoneType == 'poly' then
+            points[#points + 1] = vec(xCoord, yCoord)
+        end
 
         ---@type string[]?
-		local input = lib.inputDialog(('Name your %s Zone'):format(firstToUpper(zoneType)), {
-            { type = 'input', label = 'Name', placeholder = 'none' },
-            { type = 'select', label = 'Format', default = format, options = {
-                { value = 'function', label = 'Function' },
-                { value = 'array', label = 'Array' },
-                { value = 'target', label = 'Target'},
-            }}
+        local input = lib.inputDialog(('Nommez votre %s zone'):format(firstToUpper(zoneType)), {
+            { type = 'input', label = 'Nom', placeholder = 'aucun' },
+            {
+                type = 'select',
+                label = 'Format',
+                default = format,
+                options = {
+                    { value = 'function', label = 'Fonction' },
+                    { value = 'array',    label = 'Tableau' },
+                    { value = 'target',   label = 'Cible' },
+                }
+            },
+            {
+                type = 'select',
+                label = 'Action',
+                default = 'write',
+                options = {
+                    { value = 'write',     label = 'Écrire dans un fichier' },
+                    { value = 'copy',     label = 'Presse-papiers' },
+                }
+            },
         })
 
         if not input then return end
 
+        if input[3] == 'copy' then
+            local output = parse[zoneType]({
+                zoneType = zoneType,
+                name = input[1] or 'none',
+                format = format,
+                xCoord = xCoord,
+                yCoord = yCoord,
+                zCoord = zCoord,
+                heading = heading,
+                height = height,
+                width = width,
+                length = length,
+                points = points
+            })
+            lib.setClipboard(output)
+            return
+        end
+
         format = input[2]
 
-		TriggerServerEvent('ox_lib:saveZone', {
-			zoneType = zoneType,
-			name = input[1] or 'none',
-			format = format,
-			xCoord = xCoord,
-			yCoord = yCoord,
-			zCoord = zCoord,
-			heading = heading,
-			height = height,
-			width = width,
-			length = length,
-			points = points
-		})
+        TriggerServerEvent('ox_lib:saveZone', {
+            zoneType = zoneType,
+            name = input[1] or 'none',
+            format = format,
+            xCoord = xCoord,
+            yCoord = yCoord,
+            zCoord = zCoord,
+            heading = heading,
+            height = height,
+            width = width,
+            length = length,
+            points = points
+        })
 
         lastZone[zoneType] = {
             zoneType = zoneType,
@@ -104,12 +256,12 @@ local function closeCreator(cancel)
             width = width,
             length = length,
         }
-	end
+    end
 
-	creatorActive = false
-	controlsActive = false
-	lib.hideTextUI()
-	zoneType = nil
+    creatorActive = false
+    controlsActive = false
+    lib.hideTextUI()
+    zoneType = nil
 end
 
 local function drawRectangle(rec)
@@ -120,21 +272,21 @@ local function drawRectangle(rec)
 end
 
 local function drawLines()
-	local thickness = vec(0, 0, height / 2)
+    local thickness = vec(0, 0, height / 2)
     local activeA, activeB = vec(xCoord, yCoord, zCoord) + thickness, vec(xCoord, yCoord, zCoord) - thickness
 
     if zoneType == 'poly' then
         DrawLine(activeA.x, activeA.y, activeA.z, activeB.x, activeB.y, activeB.z, 255, 42, 24, 225)
     end
 
-	for i = 1, #points do
-		points[i] = vec(points[i].x, points[i].y, zCoord)
-		local a = points[i] + thickness
-		local b = points[i] - thickness
-		local c = (points[i + 1] and vec(points[i + 1].x, points[i + 1].y, zCoord) or points[1]) + thickness
-		local d = (points[i + 1] and vec(points[i + 1].x, points[i + 1].y, zCoord) or points[1]) - thickness
-		local e = points[i]
-		local f = (points[i + 1] and vec(points[i + 1].x, points[i + 1].y, zCoord) or points[1])
+    for i = 1, #points do
+        points[i] = vec(points[i].x, points[i].y, zCoord)
+        local a = points[i] + thickness
+        local b = points[i] - thickness
+        local c = (points[i + 1] and vec(points[i + 1].x, points[i + 1].y, zCoord) or points[1]) + thickness
+        local d = (points[i + 1] and vec(points[i + 1].x, points[i + 1].y, zCoord) or points[1]) - thickness
+        local e = points[i]
+        local f = (points[i + 1] and vec(points[i + 1].x, points[i + 1].y, zCoord) or points[1])
 
         if i == #points and zoneType == 'poly' then
             DrawLine(a.x, a.y, a.z, b.x, b.y, b.z, 255, 42, 24, 225)
@@ -153,13 +305,13 @@ local function drawLines()
 
         if displayMode == 2 or displayMode == 4 then
             if i == #points and zoneType == 'poly' then
-                drawRectangle({a, b, activeB, activeA})
-                drawRectangle({activeA, activeB, d, c})
+                drawRectangle({ a, b, activeB, activeA })
+                drawRectangle({ activeA, activeB, d, c })
             else
-                drawRectangle({a, b, d, c})
+                drawRectangle({ a, b, d, c })
             end
         end
-	end
+    end
 end
 
 local function getRelativePos(origin, point, theta)
@@ -182,22 +334,22 @@ local controls = {
 }
 
 local function startCreator(arg, useLast)
-	creatorActive = true
+    creatorActive = true
     controlsActive = true
-	zoneType = arg
+    zoneType = arg
 
-	step = 5
-	local coords = GetEntityCoords(cache.ped)
-	xCoord = round(coords.x) + 0.0
-	yCoord = round(coords.y) + 0.0
-	zCoord = round(coords.z) + 0.0
-	heading = useLast and lastZone[zoneType].heading or 0.0
-	height = useLast and lastZone[zoneType].height or 4.0
-	width = useLast and lastZone[zoneType].width or 4.0
-	length = useLast and lastZone[zoneType].length or 4.0
-	points = {}
+    step = 5
+    local coords = GetEntityCoords(cache.ped)
+    xCoord = round(coords.x) + 0.0
+    yCoord = round(coords.y) + 0.0
+    zCoord = round(coords.z) + 0.0
+    heading = useLast and lastZone[zoneType].heading or 0.0
+    height = useLast and lastZone[zoneType].height or 4.0
+    width = useLast and lastZone[zoneType].width or 4.0
+    length = useLast and lastZone[zoneType].length or 4.0
+    points = {}
 
-	updateText()
+    updateText()
 
     while creatorActive do
         Wait(0)
@@ -238,7 +390,8 @@ local function startCreator(arg, useLast)
             drawLines()
         elseif zoneType == 'sphere' then
             ---@diagnostic disable-next-line: param-type-mismatch
-            DrawMarker(28, xCoord, yCoord, zCoord, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, height, height, height, 255, 42, 24, 100, false, false, 0, false, false, false, false)
+            DrawMarker(28, xCoord, yCoord, zCoord, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, height, height, height, 255, 42, 24, 100, false, false, 0, false, false, false,
+                false)
         end
 
         if controlsActive then
@@ -252,7 +405,7 @@ local function startCreator(arg, useLast)
             local rStep = steps[2][step]
 
             if IsDisabledControlJustReleased(0, 17) then -- scroll up
-                if IsDisabledControlPressed(0, 21) then -- shift held down
+                if IsDisabledControlPressed(0, 21) then  -- shift held down
                     change = true
                     height += lStep
                 elseif IsDisabledControlPressed(0, 36) then -- ctrl held down
@@ -266,7 +419,7 @@ local function startCreator(arg, useLast)
                     step += 1
                 end
             elseif IsDisabledControlJustReleased(0, 16) then -- scroll down
-                if IsDisabledControlPressed(0, 21) then -- shift held down
+                if IsDisabledControlPressed(0, 21) then      -- shift held down
                     change = true
 
                     if height - lStep > lStep then
@@ -471,13 +624,13 @@ local function startCreator(arg, useLast)
 end
 
 RegisterCommand('zone', function(source, args, rawCommand)
-	if args[1] ~= 'poly' and args[1] ~= 'box' and args[1] ~= 'sphere' then
-        lib.notify({title = 'Invalid zone type', type = 'error'})
+    if args[1] ~= 'poly' and args[1] ~= 'box' and args[1] ~= 'sphere' then
+        lib.notify({ title = 'Type de zone invalide', type = 'error' })
         return
     end
 
     if creatorActive then
-        lib.notify({title = 'Already creating a zone', type = 'error'})
+        lib.notify({ title = 'Création de zone déjà en cours', type = 'error' })
         return
     end
 
@@ -485,10 +638,10 @@ RegisterCommand('zone', function(source, args, rawCommand)
 
     if useLast then
         if args[1] == 'poly' then
-            lib.notify({title = 'Cannot duplicate a poly zone', type = 'error'})
+            lib.notify({ title = 'Impossible de dupliquer une zone polygone', type = 'error' })
             useLast = false
         elseif not lastZone[args[1]] then
-            lib.notify({title = ('No previous %s zone to duplicate'):format(args[1]), type = 'error'})
+            lib.notify({ title = ('Aucune zone %s précédente à dupliquer'):format(args[1]), type = 'error' })
             useLast = false
         end
     end
@@ -498,8 +651,8 @@ end, true)
 
 CreateThread(function()
     Wait(1000)
-    TriggerEvent('chat:addSuggestion', '/zone', 'Starts creation of the specified zone', {
+    TriggerEvent('chat:addSuggestion', '/zone', 'Démarre la création de la zone spécifiée', {
         { name = 'zoneType', help = 'poly, box, sphere' },
-        { name = 'useLast', help = 'duplicates the last created zone of the specified type (box and sphere only, optional)' }
+        { name = 'useLast',  help = 'duplique la dernière zone créée du type spécifié (box et sphere seulement, optionnel)' }
     })
 end)
