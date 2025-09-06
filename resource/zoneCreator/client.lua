@@ -154,7 +154,7 @@ local function updateText()
 
     if zoneType == 'poly' then
         text[#text + 1] = ('Hauteur [Shift + Molette] : %s  \n'):format(height)
-        text[#text + 1] = ('Mode d\\'affichage [G] : %s  \n'):format(firstToUpper(displayModes[displayMode]))
+        text[#text + 1] = ('Mode d\'affichage [G] : %s  \n'):format(firstToUpper(displayModes[displayMode]))
         text[#text + 1] = ('Basculer mode Axe [C] : %s  \n'):format(alignMovementWithCamera and 'Caméra' or 'Grille')
         text[#text + 1] = 'Créer un nouveau point - [Espace]  \n'
         text[#text + 1] = 'Modifier le dernier point - [Retour arrière]  \n'
@@ -163,7 +163,7 @@ local function updateText()
         text[#text + 1] = ('Hauteur [Shift + Molette] : %s  \n'):format(height)
         text[#text + 1] = ('Largeur [Ctrl + Molette] : %s  \n'):format(width)
         text[#text + 1] = ('Longueur [Alt + Molette] : %s  \n'):format(length)
-        text[#text + 1] = ('Mode d\\'affichage [G] : %s  \n'):format(firstToUpper(displayModes[displayMode]))
+        text[#text + 1] = ('Mode d\'affichage [G] : %s  \n'):format(firstToUpper(displayModes[displayMode]))
         text[#text + 1] = ('Basculer mode Axe [C] : %s  \n'):format(alignMovementWithCamera and 'Caméra' or 'Grille')
         text[#text + 1] = 'Récadrer - [Espace]  \n'
     elseif zoneType == 'sphere' then
