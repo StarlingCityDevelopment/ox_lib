@@ -19,6 +19,10 @@ local lastZone = {}
 local alignMovementWithCamera = false
 local useLastZoneFalsyInputs = { ['0'] = true, [''] = true, ['false'] = true, ['nil'] = true }
 
+local function formatNumber(num)
+	return tostring(num):gsub(",", ".")
+end
+
 local parse = {
     poly = function(data)
         local points = {}
